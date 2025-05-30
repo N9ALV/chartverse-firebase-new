@@ -2,7 +2,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Download, FileJson, Share2, Sparkles, AlertTriangle } from 'lucide-react';
+import { Sparkles } from 'lucide-react'; // Removed Download, FileJson, Share2
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ interface ActionToolbarProps {
   onDownloadImage: (format: 'png' | 'jpeg') => void;
   onDownloadConfig: () => void;
   onShareUrl: () => void;
-  onTriggerAISuggestion?: () => void; // Optional if AI is triggered by URL param
+  onTriggerAISuggestion?: () => void; 
   isAIEnabled: boolean;
   hasChartData: boolean;
 }
@@ -29,19 +29,25 @@ export function ActionToolbar({
   isAIEnabled,
   hasChartData,
 }: ActionToolbarProps) {
+  const buttonClassName = "text-xs px-2 py-1 h-auto text-muted-foreground hover:text-foreground";
+
   return (
-    <div className="flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-1 items-center">
       {isAIEnabled && onTriggerAISuggestion && (
-        <Button variant="outline" onClick={onTriggerAISuggestion} size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-          <Sparkles className="mr-2 h-4 w-4" />
+        <Button 
+          variant="outline" 
+          onClick={onTriggerAISuggestion} 
+          className={`${buttonClassName} bg-accent hover:bg-accent/90 text-accent-foreground`}
+        >
+          <Sparkles className="mr-1 h-3 w-3" />
           AI Suggest
         </Button>
       )}
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" disabled={!hasChartData}>
-            {/* <Download className="mr-2 h-4 w-4" /> */} Download
+          <Button variant="outline" className={buttonClassName} disabled={!hasChartData}>
+            Download
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -54,13 +60,13 @@ export function ActionToolbar({
             JPEG Image
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onDownloadConfig} disabled={!hasChartData}>
-            {/* <FileJson className="mr-2 h-4 w-4" /> */} JSON Config
+            JSON Config
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button variant="outline" size="sm" onClick={onShareUrl}>
-        {/* <Share2 className="mr-2 h-4 w-4" /> */} Share URL
+      <Button variant="outline" className={buttonClassName} onClick={onShareUrl}>
+        Share URL
       </Button>
     </div>
   );

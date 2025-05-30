@@ -204,11 +204,9 @@ function ChartVersePageContent() {
 
   return (
     <div className="container mx-auto p-2 sm:p-3 md:p-4 flex flex-col min-h-screen">
-      <header className="mb-2">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center">
-            <h1 className="text-3xl font-bold text-primary">ChartVerse</h1>
-          </div>
+      <header className="mb-1">
+        <div className="flex flex-col sm:flex-row justify-end items-center gap-1">
+          {/* Title removed as per request */}
           <ActionToolbar
             onDownloadImage={handleDownloadImage}
             onDownloadConfig={handleDownloadConfig}
@@ -233,7 +231,7 @@ function ChartVersePageContent() {
               <div className="mx-auto bg-primary/10 rounded-full p-3 w-fit">
                  <BarChart3 className="h-12 w-12 text-primary" />
               </div>
-              <CardTitle className="text-2xl mt-4">Welcome to ChartVerse!</CardTitle>
+              <CardTitle className="text-2xl mt-4">Welcome!</CardTitle>
               <CardDescription className="text-lg text-muted-foreground">
                 Visualize your data dynamically.
               </CardDescription>
@@ -265,9 +263,7 @@ function ChartVersePageContent() {
         />
       )}
 
-      <footer className="mt-8 py-4 text-center text-sm text-muted-foreground border-t">
-        ChartVerse - Dynamic and AI-Powered Chart Generation.
-      </footer>
+      {/* Footer removed as per request */}
     </div>
   );
 }
