@@ -61,11 +61,17 @@ function ChartVersePageContent() {
   }, [router]);
 
   useEffect(() => {
+    const fbrndParam = searchParams.get('fbrnd');
+    let aiPromptParam = searchParams.get('aiPrompt');
+    let aiDataParam = searchParams.get('aiData');
     const chartTypeParam = searchParams.get('chartType') as SupportedChartType | null;
     const chartDataParam = searchParams.get('chartData');
     const chartOptionsParam = searchParams.get('chartOptions');
-    const aiPromptParam = searchParams.get('aiPrompt');
-    const aiDataParam = searchParams.get('aiData');
+
+    if (fbrndParam) {
+      aiPromptParam = fbrndParam;
+      aiDataParam = '{}'; // Default empty data for fbrnd
+    }
 
     if (aiPromptParam && aiDataParam) {
       setIsLoadingAI(true);
@@ -80,7 +86,7 @@ function ChartVersePageContent() {
                 const options = chartOptionsParam ? JSON.parse(chartOptionsParam) : {};
                 setChartConfig({ type: chartTypeParam, data, options });
               } catch (e) {
-                toast({ variant: 'destructive', title: 'URL Parsing Error', description: 'Invalid chart data or options in URL.' });
+                // Do not toast here, error is already handled by AI suggestion error
                 setChartConfig(DEFAULT_CHART_CONFIG); // Fallback to default
               }
             } else {
@@ -134,12 +140,16 @@ function ChartVersePageContent() {
       updateUrlParams(newChartConfig); // Update URL with AI suggested config
       setIsAISuggestionDialogOpen(false);
       setAISuggestion(null);
+      
       // Remove AI params from URL
       const currentParams = new URLSearchParams(window.location.search);
-      currentParams.delete('aiPrompt');
-      currentParams.delete('aiData');
+      if (currentParams.has('fbrnd')) {
+        currentParams.delete('fbrnd');
+      } else {
+        currentParams.delete('aiPrompt');
+        currentParams.delete('aiData');
+      }
       router.replace(`/?${currentParams.toString()}`, { scroll: false });
-      // toast({ title: 'AI Suggestion Applied', description: 'Chart updated with AI configuration.' });
     } catch (e) {
       toast({ variant: 'destructive', title: 'AI Suggestion Error', description: 'Could not apply AI suggestion due to invalid configuration format.' });
     }
@@ -150,11 +160,10 @@ function ChartVersePageContent() {
       const dataUrl = chartRef.current.toBase64Image(format === 'jpeg' ? 'image/jpeg' : 'image/png');
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `chartverse_chart.${format}`;
+      link.download = `chart.${format}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // toast({ title: 'Download Started', description: `Chart downloaded as ${format.toUpperCase()}.` });
     } else {
       toast({ variant: 'destructive', title: 'Download Error', description: 'Chart instance not available.' });
     }
@@ -167,12 +176,11 @@ function ChartVersePageContent() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'chartverse_config.json';
+      link.download = 'chart_config.json';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      // toast({ title: 'Download Started', description: 'Chart configuration downloaded.' });
     } else {
       toast({ variant: 'destructive', title: 'Download Error', description: 'No chart configuration available to download.' });
     }
@@ -181,7 +189,7 @@ function ChartVersePageContent() {
   const handleShareUrl = () => {
     navigator.clipboard.writeText(window.location.href)
       .then(() => {
-        // toast({ title: 'URL Copied', description: 'Chart URL copied to clipboard.' })
+        // Informational toast removed
       })
       .catch(() => toast({ variant: 'destructive', title: 'Copy Error', description: 'Could not copy URL to clipboard.' }));
   };
@@ -189,7 +197,6 @@ function ChartVersePageContent() {
   const handleLoadSample = () => {
     setChartConfig(DEFAULT_CHART_CONFIG);
     updateUrlParams(DEFAULT_CHART_CONFIG);
-    // toast({ title: 'Sample Chart Loaded', description: 'A sample chart configuration has been loaded.' });
   };
 
   if (isLoadingAI) {
@@ -203,10 +210,9 @@ function ChartVersePageContent() {
   }
 
   return (
-    <div className="container mx-auto p-2 sm:p-3 md:p-4 flex flex-col min-h-screen">
+    <div className="container mx-auto p-2 sm:p-3 md:p-1 flex flex-col min-h-screen">
       <header className="mb-1">
         <div className="flex flex-col sm:flex-row justify-end items-center gap-1">
-          {/* Title removed as per request */}
           <ActionToolbar
             onDownloadImage={handleDownloadImage}
             onDownloadConfig={handleDownloadConfig}
@@ -241,13 +247,13 @@ function ChartVersePageContent() {
                 To get started, provide chart configuration via URL parameters (<code>chartType</code>, <code>chartData</code>, <code>chartOptions</code>).
               </p>
               <p>
-                Or, use our AI to suggest a chart by adding <code>aiPrompt</code> (your visualization goal) and <code>aiData</code> (your data in JSON/CSV) to the URL.
+                Or, use our AI by adding <code>aiPrompt</code> & <code>aiData</code>, or just <code>fbrnd</code> to the URL.
               </p>
               <Button onClick={handleLoadSample} size="lg" className="mt-4">
                 Load Sample Chart
               </Button>
                <p className="text-xs text-muted-foreground mt-2">
-                Example for AI: <code>{`?aiPrompt=Show sales per region&aiData=[{"region":"North","sales":100},{"region":"South","sales":150}]`}</code>
+                Examples: <code>{`?aiPrompt=Sales&aiData=[{"sales":100}]`}</code> or <code>{`?fbrnd=Pie chart of sales`}</code>
               </p>
             </CardContent>
           </Card>
@@ -262,14 +268,11 @@ function ChartVersePageContent() {
           onApplySuggestion={handleApplyAISuggestion}
         />
       )}
-
-      {/* Footer removed as per request */}
     </div>
   );
 }
 
 export default function Page() {
-  // Suspense is required for useSearchParams hook
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <ChartVersePageContent />
