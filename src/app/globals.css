@@ -5,29 +5,45 @@
 
 @layer base {
   :root {
+    /* Overall dark theme for the app */
     --background: 228 100% 8%; /* #000c28 */
     --foreground: 210 40% 98%; /* Light text for dark background (e.g., slate-50) */
-    --card: 225 78% 16%; /* #09194a */
-    --card-foreground: 210 40% 98%;
+
+    /* Light theme for chart card/visualization area */
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 222 47% 11%; /* Dark text for light card background (e.g., dark-slate-900) */
+
+    /* Popover remains dark themed */
     --popover: 225 78% 16%; /* #09194a */
     --popover-foreground: 210 40% 98%;
+
+    /* Primary color from user spec */
     --primary: 223 72% 27%; /* #132c76 */
     --primary-foreground: 210 40% 98%; /* Light text on primary */
+
+    /* Other dark theme elements */
     --secondary: 229 46% 30%; /* Darker shade of #4054b2 for secondary elements */
     --secondary-foreground: 210 40% 98%;
     --muted: 229 46% 20%; /* Even darker for muted backgrounds */
-    --muted-foreground: 220 13% 60%; /* Lighter grey for muted text (e.g., slate-400) */
+    --muted-foreground: 220 13% 60%; /* Lighter grey for muted text (e.g., slate-400) - for action buttons */
+    
+    /* Accent color for interactive elements (can be user spec or derived) */
     --accent: 220 13% 69%; /* #a3aabf */
     --accent-foreground: 228 100% 8%; /* Dark text (#000c28) for on accent elements */
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 69%; /* #a3aabf (for gridlines etc.) */
-    --input: 225 78% 20%; /* Slightly lighter than card background */
+    
+    /* Border color for chart gridlines etc. on the light chart background */
+    --border: 220 13% 50%; /* #a3aabf adjusted slightly for better visibility on white if needed, original: 220 13% 69% */
+    
+    --input: 225 78% 20%; /* Slightly lighter than card background for dark theme inputs */
     --ring: 223 72% 27%; /* primary color for rings */
     
+    /* Chart data colors from user spec */
     --chart-1: 223 72% 27%; /* #132c76 */
     --chart-2: 225 78% 16%; /* #09194a */
-    --chart-3: 228 100% 8%;  /* #000c28 - same as background, use with care */
+    --chart-3: 228 100% 8%;  /* #000c28 - use with care on light bg, good for borders or specific elements */
     --chart-4: 229 46% 48%; /* #4054b2 */
     --chart-5: 225 73% 57%; /* #4169e1 */
 
@@ -44,50 +60,16 @@
     --sidebar-ring: 223 72% 35%;
   }
 
-  .dark {
-    /* Dark theme can be further customized if needed, or removed if default is always dark */
-    --background: 222 47% 11%; /* original dark slate-900 */
-    --foreground: 210 40% 98%; /* slate-50 */
-    --card: 222 47% 15%; /* slate-800 */
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 15%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 223 80% 70%; /* Lighter, vibrant version of #132c76 */
-    --primary-foreground: 223 72% 10%; /* Dark text for contrast */
-    --secondary: 222 47% 20%; /* Slightly lighter dark, e.g., slate-700 */
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 20%;
-    --muted-foreground: 220 15% 65%; /* Lighter muted text, e.g., slate-400 */
-    --accent: 220 25% 55%; /* Desaturated, lighter accent */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 222 47% 25%; /* e.g., slate-700 */
-    --input: 222 47% 25%;
-    --ring: 223 80% 70%; /* primary color for rings in dark mode */
-
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+  /* Removed the .dark class override, as :root now defines the primary theme.
+     If a toggleable dark/light mode was desired, the .dark class would be used differently.
+  */
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border; /* This uses --border, which is now tuned for light chart background */
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans; /* Overall dark page, light text */
   }
 }

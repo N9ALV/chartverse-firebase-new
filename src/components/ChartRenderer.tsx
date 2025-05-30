@@ -62,52 +62,63 @@ export function ChartRenderer({ chartType, chartData, chartOptions, chartRef }: 
       legend: {
         position: 'top' as const,
         labels: {
-          color: 'hsl(var(--foreground))', 
+          color: 'hsl(var(--card-foreground))', // Dark text for light chart background
         },
       },
       title: {
         display: true,
         text: 'Chart',
-        color: 'hsl(var(--foreground))',
+        color: 'hsl(var(--card-foreground))', // Dark text for light chart background
       },
-      tooltip: {
-        backgroundColor: 'hsl(var(--background))',
-        titleColor: 'hsl(var(--foreground))',
-        bodyColor: 'hsl(var(--foreground))',
-        borderColor: 'hsl(var(--border))',
+      tooltip: { // Tooltip appears over the chart, on the dark app background
+        backgroundColor: 'hsl(var(--popover))', // Dark popover background
+        titleColor: 'hsl(var(--popover-foreground))', // Light text
+        bodyColor: 'hsl(var(--popover-foreground))', // Light text
+        borderColor: 'hsl(var(--border))', // Use border color for tooltip border
         borderWidth: 1,
       }
     },
     scales: {
       x: {
-        ticks: { color: 'hsl(var(--foreground))' },
-        grid: { color: 'hsl(var(--border))' },
-        title: { color: 'hsl(var(--foreground))', display: true }
+        ticks: { color: 'hsl(var(--card-foreground))' }, // Dark text
+        grid: { color: 'hsl(var(--border))' }, // Defined border color (e.g., a3aabf)
+        title: { color: 'hsl(var(--card-foreground))', display: true } // Dark text
       },
       y: {
-        ticks: { color: 'hsl(var(--foreground))' },
-        grid: { color: 'hsl(var(--border))' },
-        title: { color: 'hsl(var(--foreground))', display: true }
+        ticks: { color: 'hsl(var(--card-foreground))' }, // Dark text
+        grid: { color: 'hsl(var(--border))' }, // Defined border color
+        title: { color: 'hsl(var(--card-foreground))', display: true } // Dark text
       },
     },
-    color: 'hsl(var(--foreground))', 
+    // Removed general color: 'hsl(var(--foreground))' as specific text colors are now set
   };
 
   const mergedOptions = { ...defaultOptions, ...chartOptions };
 
+  // Ensure scales are explicitly defined for relevant chart types if not provided by AI
   if (chartType === 'bar' || chartType === 'line' || chartType === 'scatter' || chartType === 'bubble') {
     if (!mergedOptions.scales) mergedOptions.scales = {};
-    if (!mergedOptions.scales.x) mergedOptions.scales.x = { type: 'category', ticks: { color: 'hsl(var(--foreground))' }, grid: { color: 'hsl(var(--border))' } };
-    if (!mergedOptions.scales.y) mergedOptions.scales.y = { type: 'linear', ticks: { color: 'hsl(var(--foreground))' }, grid: { color: 'hsl(var(--border))' } };
+    if (!mergedOptions.scales.x) mergedOptions.scales.x = { type: 'category', ticks: { color: 'hsl(var(--card-foreground))' }, grid: { color: 'hsl(var(--border))' }, title: { color: 'hsl(var(--card-foreground))', display: true } };
+    if (!mergedOptions.scales.y) mergedOptions.scales.y = { type: 'linear', ticks: { color: 'hsl(var(--card-foreground))' }, grid: { color: 'hsl(var(--border))' }, title: { color: 'hsl(var(--card-foreground))', display: true } };
+  }
+   // For pie/doughnut charts, legend and title colors are primary concerns for text.
+  if (chartType === 'pie' || chartType === 'doughnut' || chartType === 'polarArea' || chartType === 'radar') {
+    if (mergedOptions.scales?.x || mergedOptions.scales?.y) {
+        // These chart types typically don't use Cartesian axes in the same way.
+        // Clear them if they were somehow inherited or set, to prevent rendering issues.
+        // Or, ensure their color properties are correctly set if specific scales are used (e.g. radar).
+        if (mergedOptions.scales.r) { // For radar and polarArea
+            mergedOptions.scales.r.ticks = { ...mergedOptions.scales.r.ticks, color: 'hsl(var(--card-foreground))' };
+            mergedOptions.scales.r.grid = { ...mergedOptions.scales.r.grid, color: 'hsl(var(--border))' };
+            mergedOptions.scales.r.pointLabels = { ...mergedOptions.scales.r.pointLabels, color: 'hsl(var(--card-foreground))' };
+            mergedOptions.scales.r.angleLines = { ...mergedOptions.scales.r.angleLines, color: 'hsl(var(--border))' };
+        }
+    }
   }
 
+
+  // The div uses bg-card, which is now white (or light) from globals.css
   return (
-    // Adjusted height calculation: reduced top/bottom combined spacing (e.g. header, page padding)
-    // Old: h-[calc(100vh-160px)] md:h-[calc(100vh-200px)]
-    // New: h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] 
-    // Further reduced after footer removal and header shrinking:
-    // Assuming header is now ~40px, page padding (p-4) ~32px top/bottom
-    // Let's try a more aggressive height for the chart area
     <div className="relative h-[calc(100vh-60px)] w-full bg-card p-1 rounded-lg shadow-md">
       <ChartComponent ref={chartRef} data={chartData} options={mergedOptions} />
     </div>

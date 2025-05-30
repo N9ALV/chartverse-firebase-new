@@ -1,3 +1,4 @@
+
 // use server'
 'use server';
 
@@ -38,29 +39,55 @@ const prompt = ai.definePrompt({
 Description: {{{description}}}
 Data: {{{data}}}
 
-Prioritize using the following color palette for chart data elements (like bars, lines, pie slices, dataset backgrounds, dataset borders etc.):
-- #132c76
-- #09194a
-- #000c28 (Note: This color is very dark, potentially matching the app background. Use it thoughtfully, ensuring contrast, perhaps for borders on lighter elements or fills that stand out against other chart components.)
-- #4054b2
-- #4169e1
+IMPORTANT STYLING GUIDELINES:
+- The chart will be rendered on a LIGHT background (e.g., white).
+- General chart text (titles, axis labels, legend labels, tick labels) should be DARK (e.g., color: 'hsl(var(--card-foreground))' which is a dark color like #222 or #333).
+- Gridlines and axis lines should use a muted color like 'hsl(var(--border))' (e.g., #a3aabf or a light grey).
 
-For general chart text, titles, and labels, use the theme's foreground color (a light color).
-For gridlines and axis lines, the theme's border color (#a3aabf) will be applied by default, so you generally don't need to specify these unless a different color is explicitly required by the visualization.
+Prioritize using the following color palette for chart DATA elements (like bars, lines, pie slices, dataset backgrounds, dataset borders etc.):
+- #132c76 (Primary Blue)
+- #09194a (Darker Blue)
+- #4054b2 (Medium Blue)
+- #4169e1 (Royal Blue)
+- #000c28 (Very Dark Blue/Almost Black - Use this thoughtfully for data elements, perhaps for borders on lighter elements or if it provides good contrast against other data elements on the light chart background. Be mindful it's also the main app background color.)
+
 
 Consider the data types, the relationships between data points, and the overall goal of the visualization.
 Provide a JSON configuration that is compatible with Chart.js. The configuration should include 'data' and 'options' objects.
+
 Example for dataset colors:
 "datasets": [{
   "label": "Sample",
   "data": [10, 20],
-  "backgroundColor": ["#132c76", "#09194a"],
-  "borderColor": ["#132c76", "#09194a"]
+  "backgroundColor": ["#132c76", "#09194a"], // Use the specified palette
+  "borderColor": ["#132c76", "#09194a"]    // Use the specified palette
 }]
 
+Example for options to ensure text and gridlines are correctly colored for a light chart background:
+"options": {
+  "plugins": {
+    "legend": { "labels": { "color": "hsl(var(--card-foreground))" } },
+    "title": { "display": true, "text": "Chart Title", "color": "hsl(var(--card-foreground))" }
+  },
+  "scales": {
+    "x": {
+      "ticks": { "color": "hsl(var(--card-foreground))" },
+      "grid": { "color": "hsl(var(--border))" },
+      "title": { "display": true, "text": "X-Axis", "color": "hsl(var(--card-foreground))" }
+    },
+    "y": {
+      "ticks": { "color": "hsl(var(--card-foreground))" },
+      "grid": { "color": "hsl(var(--border))" },
+      "title": { "display": true, "text": "Y-Axis", "color": "hsl(var(--card-foreground))" }
+    }
+  }
+}
+For non-cartesian charts (pie, doughnut, polar, radar), ensure legend and title colors are 'hsl(var(--card-foreground))'. For radar/polar area, pointLabels and angleLines/grid lines should also follow this scheme (dark text, light grid).
+
+Output JSON structure:
 {
   "chartType": "The suggested chart type",
-  "configuration": "The suggested chart configuration in JSON format, including data and options as per Chart.js structure.",
+  "configuration": "The suggested chart configuration in JSON format, including data and options as per Chart.js structure, respecting the light background and dark text/grid color requirements.",
   "reasoning": "Explanation of why the chart type and configuration were suggested"
 }
 `,
