@@ -2,7 +2,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react'; // Removed Download, FileJson, Share2
+// Sparkles icon removed as AI Suggest button is removed
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +16,8 @@ interface ActionToolbarProps {
   onDownloadImage: (format: 'png' | 'jpeg') => void;
   onDownloadConfig: () => void;
   onShareUrl: () => void;
-  onTriggerAISuggestion?: () => void; 
-  isAIEnabled: boolean;
+  // onTriggerAISuggestion prop removed
+  isAIEnabled: boolean; // Kept for potential future use, but button is hidden
   hasChartData: boolean;
 }
 
@@ -25,15 +25,16 @@ export function ActionToolbar({
   onDownloadImage,
   onDownloadConfig,
   onShareUrl,
-  onTriggerAISuggestion,
+  // onTriggerAISuggestion,
   isAIEnabled,
   hasChartData,
 }: ActionToolbarProps) {
-  const buttonClassName = "text-xs px-2 py-1 h-auto text-muted-foreground hover:text-foreground";
+  const buttonClassName = "text-xs px-2 py-1 h-auto text-muted-foreground hover:text-foreground no-underline"; // Ensure no underline for text-like appearance
 
   return (
     <div className="flex flex-wrap gap-1 items-center">
-      {isAIEnabled && onTriggerAISuggestion && (
+      {/* AI Suggest button removed based on current request for URL-driven AI */}
+      {/* {isAIEnabled && onTriggerAISuggestion && (
         <Button 
           variant="outline" 
           onClick={onTriggerAISuggestion} 
@@ -42,11 +43,11 @@ export function ActionToolbar({
           <Sparkles className="mr-1 h-3 w-3" />
           AI Suggest
         </Button>
-      )}
+      )} */}
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className={buttonClassName} disabled={!hasChartData}>
+          <Button variant="link" className={`${buttonClassName} p-0 h-auto`} disabled={!hasChartData}>
             Download
           </Button>
         </DropdownMenuTrigger>
@@ -65,7 +66,7 @@ export function ActionToolbar({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button variant="outline" className={buttonClassName} onClick={onShareUrl}>
+      <Button variant="link" className={`${buttonClassName} p-0 h-auto`} onClick={onShareUrl}>
         Share URL
       </Button>
     </div>

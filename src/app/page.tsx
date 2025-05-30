@@ -4,17 +4,16 @@
 import type { ChartConfig, SupportedChartType } from '@/types';
 import { ChartRenderer } from '@/components/ChartRenderer';
 import { ActionToolbar } from '@/components/ActionToolbar';
-import { AISuggestionDialog } from '@/components/AISuggestionDialog';
+// AISuggestionDialog removed
 import { getAISuggestion } from '@/lib/actions';
-import type { SuggestChartConfigurationOutput } from '@/ai/flows/suggest-chart-configuration';
+// SuggestChartConfigurationOutput type is no longer needed here directly for a dialog
 import { useToast } from '@/hooks/use-toast';
 
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { Chart as ChartJS, ChartData, ChartOptions } from 'chart.js';
-import { Loader2, BarChart3 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+// Card components for welcome screen removed
 
 const DEFAULT_CHART_CONFIG: ChartConfig = {
   type: 'bar' as SupportedChartType,
@@ -47,8 +46,7 @@ function ChartVersePageContent() {
 
   const [chartConfig, setChartConfig] = useState<ChartConfig | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
-  const [aiSuggestion, setAISuggestion] = useState<SuggestChartConfigurationOutput | null>(null);
-  const [isAISuggestionDialogOpen, setIsAISuggestionDialogOpen] = useState(false);
+  // Removed aiSuggestion and isAISuggestionDialogOpen states
   
   const chartRef = useRef<ChartJS | null>(null);
 
@@ -57,6 +55,8 @@ function ChartVersePageContent() {
     params.set('chartType', newConfig.type);
     params.set('chartData', JSON.stringify(newConfig.data));
     params.set('chartOptions', JSON.stringify(newConfig.options));
+    // This function now solely updates the URL to reflect an applied chart configuration.
+    // AI-specific parameters (fbrnd, aiPrompt, aiData) are not included here.
     router.replace(`/?${params.toString()}`, { scroll: false });
   }, [router]);
 
@@ -68,45 +68,36 @@ function ChartVersePageContent() {
     const chartDataParam = searchParams.get('chartData');
     const chartOptionsParam = searchParams.get('chartOptions');
 
-    if (fbrndParam) {
-      aiPromptParam = fbrndParam;
-      aiDataParam = '{}'; // Default empty data for fbrnd
-    }
-
-    if (aiPromptParam && aiDataParam) {
+    // Prioritize AI suggestion if its params are present
+    if (fbrndParam || (aiPromptParam && aiDataParam)) {
+      const effectivePrompt = fbrndParam || aiPromptParam!;
+      // If fbrnd is used, aiData might not be present, so default to '{}'
+      // If aiPrompt is used, aiData must be present.
+      const effectiveData = fbrndParam ? (searchParams.get('aiData') || '{}') : aiDataParam!;
+      
       setIsLoadingAI(true);
-      getAISuggestion({ description: aiPromptParam, data: aiDataParam })
+      setChartConfig(null); // Clear previous chart while AI is loading
+
+      getAISuggestion({ description: effectivePrompt, data: effectiveData })
         .then((suggestionResult) => {
           if ('error' in suggestionResult) {
             toast({ variant: 'destructive', title: 'AI Suggestion Error', description: suggestionResult.error });
-            // Fallback to default or existing params if AI fails
-            if (chartTypeParam && chartDataParam) {
-               try {
-                const data = JSON.parse(chartDataParam);
-                const options = chartOptionsParam ? JSON.parse(chartOptionsParam) : {};
-                setChartConfig({ type: chartTypeParam, data, options });
-              } catch (e) {
-                // Do not toast here, error is already handled by AI suggestion error
-                setChartConfig(DEFAULT_CHART_CONFIG); // Fallback to default
-              }
-            } else {
-              setChartConfig(DEFAULT_CHART_CONFIG);
-            }
+            setChartConfig(DEFAULT_CHART_CONFIG);
+            updateUrlParams(DEFAULT_CHART_CONFIG); // Reset URL to default chart
           } else {
-            setAISuggestion(suggestionResult);
-            setIsAISuggestionDialogOpen(true);
-            // Don't apply suggestion automatically, let user do it.
-            // If no other params, show default chart in background
-            if (!chartTypeParam || !chartDataParam) {
-                setChartConfig(DEFAULT_CHART_CONFIG);
-            } else {
-                 try {
-                    const data = JSON.parse(chartDataParam);
-                    const options = chartOptionsParam ? JSON.parse(chartOptionsParam) : {};
-                    setChartConfig({ type: chartTypeParam, data, options });
-                } catch (e) {
-                    setChartConfig(DEFAULT_CHART_CONFIG);
-                }
+            try {
+              const parsedConfig = JSON.parse(suggestionResult.configuration);
+              const newChartConfig: ChartConfig = {
+                type: suggestionResult.chartType as SupportedChartType,
+                data: parsedConfig.data as ChartData,
+                options: parsedConfig.options as ChartOptions,
+              };
+              setChartConfig(newChartConfig); // Apply suggestion directly
+              updateUrlParams(newChartConfig); // Update URL with applied chart config, AI params implicitly removed
+            } catch (e) {
+              toast({ variant: 'destructive', title: 'AI Application Error', description: 'Could not apply AI suggestion due to invalid configuration format.' });
+              setChartConfig(DEFAULT_CHART_CONFIG);
+              updateUrlParams(DEFAULT_CHART_CONFIG); // Reset URL
             }
           }
         })
@@ -117,43 +108,17 @@ function ChartVersePageContent() {
         const options = chartOptionsParam ? JSON.parse(chartOptionsParam) : {};
         const newConfig = { type: chartTypeParam, data, options };
         setChartConfig(newConfig);
+        // No need to call updateUrlParams here if params are already good and read.
       } catch (e) {
         toast({ variant: 'destructive', title: 'URL Parsing Error', description: 'Invalid chart data or options in URL.' });
         setChartConfig(DEFAULT_CHART_CONFIG);
         updateUrlParams(DEFAULT_CHART_CONFIG); // Reset URL to default if params are bad
       }
     } else {
-      // No specific params, load default or empty state
-      setChartConfig(null); // Initially null to show placeholder
+      // No specific params, chartConfig remains null, shows loader
+      setChartConfig(null);
     }
-  }, [searchParams, toast, updateUrlParams]);
-
-  const handleApplyAISuggestion = (suggestion: SuggestChartConfigurationOutput) => {
-    try {
-      const parsedConfig = JSON.parse(suggestion.configuration);
-      const newChartConfig: ChartConfig = {
-        type: suggestion.chartType as SupportedChartType,
-        data: parsedConfig.data as ChartData,
-        options: parsedConfig.options as ChartOptions,
-      };
-      setChartConfig(newChartConfig);
-      updateUrlParams(newChartConfig); // Update URL with AI suggested config
-      setIsAISuggestionDialogOpen(false);
-      setAISuggestion(null);
-      
-      // Remove AI params from URL
-      const currentParams = new URLSearchParams(window.location.search);
-      if (currentParams.has('fbrnd')) {
-        currentParams.delete('fbrnd');
-      } else {
-        currentParams.delete('aiPrompt');
-        currentParams.delete('aiData');
-      }
-      router.replace(`/?${currentParams.toString()}`, { scroll: false });
-    } catch (e) {
-      toast({ variant: 'destructive', title: 'AI Suggestion Error', description: 'Could not apply AI suggestion due to invalid configuration format.' });
-    }
-  };
+  }, [searchParams, toast, updateUrlParams, router]); // Added router to dependencies of useEffect
 
   const handleDownloadImage = (format: 'png' | 'jpeg') => {
     if (chartRef.current) {
@@ -194,80 +159,42 @@ function ChartVersePageContent() {
       .catch(() => toast({ variant: 'destructive', title: 'Copy Error', description: 'Could not copy URL to clipboard.' }));
   };
   
-  const handleLoadSample = () => {
-    setChartConfig(DEFAULT_CHART_CONFIG);
-    updateUrlParams(DEFAULT_CHART_CONFIG);
-  };
+  // handleLoadSample and related button removed
 
   if (isLoadingAI) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary mb-4" />
-        <h2 className="text-2xl font-semibold mb-2">Generating AI Suggestion...</h2>
-        <p className="text-muted-foreground">Please wait while our AI crafts the perfect chart for you.</p>
-      </div>
-    );
+    return <LoadingSpinner />; // Only loader, no text
+  }
+
+  if (!chartConfig) {
+    // This replaces the welcome card with a loader if no chart is configured and not loading AI
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="container mx-auto p-2 sm:p-3 md:p-1 flex flex-col min-h-screen">
+    <div className="container mx-auto p-1 sm:p-2 md:p-1 flex flex-col min-h-screen">
       <header className="mb-1">
         <div className="flex flex-col sm:flex-row justify-end items-center gap-1">
           <ActionToolbar
             onDownloadImage={handleDownloadImage}
             onDownloadConfig={handleDownloadConfig}
             onShareUrl={handleShareUrl}
-            isAIEnabled={true} 
+            isAIEnabled={false} // Manual AI trigger button removed from toolbar
             hasChartData={!!chartConfig}
           />
         </div>
       </header>
 
       <main className="flex-grow">
-        {chartConfig ? (
-          <ChartRenderer
-            chartType={chartConfig.type}
-            chartData={chartConfig.data}
-            chartOptions={chartConfig.options}
-            chartRef={chartRef}
-          />
-        ) : (
-          <Card className="w-full max-w-2xl mx-auto text-center shadow-xl border-2 border-dashed border-border">
-            <CardHeader>
-              <div className="mx-auto bg-primary/10 rounded-full p-3 w-fit">
-                 <BarChart3 className="h-12 w-12 text-primary" />
-              </div>
-              <CardTitle className="text-2xl mt-4">Welcome!</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground">
-                Visualize your data dynamically.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p>
-                To get started, provide chart configuration via URL parameters (<code>chartType</code>, <code>chartData</code>, <code>chartOptions</code>).
-              </p>
-              <p>
-                Or, use our AI by adding <code>aiPrompt</code> & <code>aiData</code>, or just <code>fbrnd</code> to the URL.
-              </p>
-              <Button onClick={handleLoadSample} size="lg" className="mt-4">
-                Load Sample Chart
-              </Button>
-               <p className="text-xs text-muted-foreground mt-2">
-                Examples: <code>{`?aiPrompt=Sales&aiData=[{"sales":100}]`}</code> or <code>{`?fbrnd=Pie chart of sales`}</code>
-              </p>
-            </CardContent>
-          </Card>
-        )}
+        {/* ChartRenderer will always be rendered if chartConfig is available */}
+        <ChartRenderer
+          chartType={chartConfig.type}
+          chartData={chartConfig.data}
+          chartOptions={chartConfig.options}
+          chartRef={chartRef}
+        />
       </main>
 
-      {aiSuggestion && (
-        <AISuggestionDialog
-          isOpen={isAISuggestionDialogOpen}
-          onOpenChange={setIsAISuggestionDialogOpen}
-          suggestion={aiSuggestion}
-          onApplySuggestion={handleApplyAISuggestion}
-        />
-      )}
+      {/* AISuggestionDialog component usage removed */}
     </div>
   );
 }

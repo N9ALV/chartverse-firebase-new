@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'ChartVerse',
-  description: 'Dynamic and AI-Powered Chart Generation',
+  description: '', // Removed description per request
 };
 
 export default function RootLayout({
