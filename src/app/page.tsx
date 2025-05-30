@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import type { Chart as ChartJS, ChartData, ChartOptions } from 'chart.js';
-import { AlertTriangle, Loader2, BarChart3 } from 'lucide-react';
+import { Loader2, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -139,7 +139,7 @@ function ChartVersePageContent() {
       currentParams.delete('aiPrompt');
       currentParams.delete('aiData');
       router.replace(`/?${currentParams.toString()}`, { scroll: false });
-      toast({ title: 'AI Suggestion Applied', description: 'Chart updated with AI configuration.' });
+      // toast({ title: 'AI Suggestion Applied', description: 'Chart updated with AI configuration.' });
     } catch (e) {
       toast({ variant: 'destructive', title: 'AI Suggestion Error', description: 'Could not apply AI suggestion due to invalid configuration format.' });
     }
@@ -154,7 +154,7 @@ function ChartVersePageContent() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast({ title: 'Download Started', description: `Chart downloaded as ${format.toUpperCase()}.` });
+      // toast({ title: 'Download Started', description: `Chart downloaded as ${format.toUpperCase()}.` });
     } else {
       toast({ variant: 'destructive', title: 'Download Error', description: 'Chart instance not available.' });
     }
@@ -172,7 +172,7 @@ function ChartVersePageContent() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast({ title: 'Download Started', description: 'Chart configuration downloaded.' });
+      // toast({ title: 'Download Started', description: 'Chart configuration downloaded.' });
     } else {
       toast({ variant: 'destructive', title: 'Download Error', description: 'No chart configuration available to download.' });
     }
@@ -180,14 +180,16 @@ function ChartVersePageContent() {
 
   const handleShareUrl = () => {
     navigator.clipboard.writeText(window.location.href)
-      .then(() => toast({ title: 'URL Copied', description: 'Chart URL copied to clipboard.' }))
+      .then(() => {
+        // toast({ title: 'URL Copied', description: 'Chart URL copied to clipboard.' })
+      })
       .catch(() => toast({ variant: 'destructive', title: 'Copy Error', description: 'Could not copy URL to clipboard.' }));
   };
   
   const handleLoadSample = () => {
     setChartConfig(DEFAULT_CHART_CONFIG);
     updateUrlParams(DEFAULT_CHART_CONFIG);
-    toast({ title: 'Sample Chart Loaded', description: 'A sample chart configuration has been loaded.' });
+    // toast({ title: 'Sample Chart Loaded', description: 'A sample chart configuration has been loaded.' });
   };
 
   if (isLoadingAI) {
@@ -201,11 +203,10 @@ function ChartVersePageContent() {
   }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 md:p-8 flex flex-col min-h-screen">
-      <header className="mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-8 w-8 text-primary" />
+    <div className="container mx-auto p-2 sm:p-3 md:p-4 flex flex-col min-h-screen">
+      <header className="mb-2">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+          <div className="flex items-center">
             <h1 className="text-3xl font-bold text-primary">ChartVerse</h1>
           </div>
           <ActionToolbar
@@ -239,16 +240,16 @@ function ChartVersePageContent() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p>
-                To get started, provide chart configuration via URL parameters (&lt;code&gt;chartType&lt;/code&gt;, &lt;code&gt;chartData&lt;/code&gt;, &lt;code&gt;chartOptions&lt;/code&gt;).
+                To get started, provide chart configuration via URL parameters (<code>chartType</code>, <code>chartData</code>, <code>chartOptions</code>).
               </p>
               <p>
-                Or, use our AI to suggest a chart by adding &lt;code&gt;aiPrompt&lt;/code&gt; (your visualization goal) and &lt;code&gt;aiData&lt;/code&gt; (your data in JSON/CSV) to the URL.
+                Or, use our AI to suggest a chart by adding <code>aiPrompt</code> (your visualization goal) and <code>aiData</code> (your data in JSON/CSV) to the URL.
               </p>
               <Button onClick={handleLoadSample} size="lg" className="mt-4">
                 Load Sample Chart
               </Button>
                <p className="text-xs text-muted-foreground mt-2">
-                Example for AI: &lt;code&gt;{`?aiPrompt=Show sales per region&aiData=[{"region":"North","sales":100},{"region":"South","sales":150}]`}&lt;/code&gt;
+                Example for AI: <code>{`?aiPrompt=Show sales per region&aiData=[{"region":"North","sales":100},{"region":"South","sales":150}]`}</code>
               </p>
             </CardContent>
           </Card>
@@ -287,4 +288,3 @@ function LoadingSpinner() {
     </div>
   );
 }
-

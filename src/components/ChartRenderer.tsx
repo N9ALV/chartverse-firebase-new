@@ -105,7 +105,7 @@ export function ChartRenderer({ chartType, chartData, chartOptions, chartRef }: 
 
 
   return (
-    <div className="relative h-[calc(100vh-200px)] md:h-[calc(100vh-250px)] w-full bg-card p-4 rounded-lg shadow-md">
+    <div className="relative h-[calc(100vh-160px)] md:h-[calc(100vh-200px)] w-full bg-card p-1 rounded-lg shadow-md">
       <ChartComponent ref={chartRef} data={chartData} options={mergedOptions} />
     </div>
   );
