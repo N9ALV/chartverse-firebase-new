@@ -187,7 +187,7 @@ function ChartVersePageContent() {
   const handleLoadSample = () => {
     setChartConfig(DEFAULT_CHART_CONFIG);
     updateUrlParams(DEFAULT_CHART_CONFIG);
-     toast({ title: 'Sample Chart Loaded', description: 'A sample chart configuration has been loaded.' });
+    toast({ title: 'Sample Chart Loaded', description: 'A sample chart configuration has been loaded.' });
   };
 
   if (isLoadingAI) {
@@ -212,7 +212,7 @@ function ChartVersePageContent() {
             onDownloadImage={handleDownloadImage}
             onDownloadConfig={handleDownloadConfig}
             onShareUrl={handleShareUrl}
-            isAIEnabled={true} // Can be made dynamic if needed
+            isAIEnabled={true} 
             hasChartData={!!chartConfig}
           />
         </div>
@@ -239,16 +239,16 @@ function ChartVersePageContent() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p>
-                To get started, provide chart configuration via URL parameters (<code>chartType</code>, <code>chartData</code>, <code>chartOptions</code>).
+                To get started, provide chart configuration via URL parameters (&lt;code&gt;chartType&lt;/code&gt;, &lt;code&gt;chartData&lt;/code&gt;, &lt;code&gt;chartOptions&lt;/code&gt;).
               </p>
               <p>
-                Or, use our AI to suggest a chart by adding <code>aiPrompt</code> (your visualization goal) and <code>aiData</code> (your data in JSON/CSV) to the URL.
+                Or, use our AI to suggest a chart by adding &lt;code&gt;aiPrompt&lt;/code&gt; (your visualization goal) and &lt;code&gt;aiData&lt;/code&gt; (your data in JSON/CSV) to the URL.
               </p>
               <Button onClick={handleLoadSample} size="lg" className="mt-4">
                 Load Sample Chart
               </Button>
                <p className="text-xs text-muted-foreground mt-2">
-                Example for AI: <code>?aiPrompt=Show sales per region&aiData=[{"region":"North","sales":100},{"region":"South","sales":150}]</code>
+                Example for AI: &lt;code&gt;{`?aiPrompt=Show sales per region&aiData=[{"region":"North","sales":100},{"region":"South","sales":150}]`}&lt;/code&gt;
               </p>
             </CardContent>
           </Card>
