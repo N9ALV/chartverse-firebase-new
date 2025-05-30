@@ -5,42 +5,48 @@
 
 @layer base {
   :root {
-    --background: 210 17% 98%; /* #f9fafb */
-    --foreground: 222 47% 11%; /* Slightly darker than default for better contrast, e.g., slate-800 */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --background: 228 100% 8%; /* #000c28 */
+    --foreground: 210 40% 98%; /* Light text for dark background (e.g., slate-50) */
+    --card: 225 78% 16%; /* #09194a */
+    --card-foreground: 210 40% 98%;
+    --popover: 225 78% 16%; /* #09194a */
+    --popover-foreground: 210 40% 98%;
     --primary: 223 72% 27%; /* #132c76 */
-    --primary-foreground: 0 0% 98%; /* White/very light for text on primary */
-    --secondary: 220 14% 93%; /* Lighter gray, e.g., slate-200 */
-    --secondary-foreground: 222 47% 11%;
-    --muted: 220 14% 93%;
-    --muted-foreground: 220 9% 46%; /* Slightly darker muted text, e.g., slate-500 */
+    --primary-foreground: 210 40% 98%; /* Light text on primary */
+    --secondary: 229 46% 30%; /* Darker shade of #4054b2 for secondary elements */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 229 46% 20%; /* Even darker for muted backgrounds */
+    --muted-foreground: 220 13% 60%; /* Lighter grey for muted text (e.g., slate-400) */
     --accent: 220 13% 69%; /* #a3aabf */
-    --accent-foreground: 223 72% 20%; /* Darker text for accent, can be primary shade */
+    --accent-foreground: 228 100% 8%; /* Dark text (#000c28) for on accent elements */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 88%; /* e.g., slate-300 */
-    --input: 220 13% 88%;
+    --border: 220 13% 69%; /* #a3aabf (for gridlines etc.) */
+    --input: 225 78% 20%; /* Slightly lighter than card background */
     --ring: 223 72% 27%; /* primary color for rings */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    
+    --chart-1: 223 72% 27%; /* #132c76 */
+    --chart-2: 225 78% 16%; /* #09194a */
+    --chart-3: 228 100% 8%;  /* #000c28 - same as background, use with care */
+    --chart-4: 229 46% 48%; /* #4054b2 */
+    --chart-5: 225 73% 57%; /* #4169e1 */
+
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Sidebar colors adjusted for new dark theme */
+    --sidebar-background: 225 78% 12%; /* Darker version of card, e.g. slightly darker than #09194a */
+    --sidebar-foreground: 210 40% 90%; /* Slightly dimmer light text */
+    --sidebar-primary: 223 72% 35%; /* Slightly lighter primary for sidebar */
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 229 46% 25%; /* Muted accent for sidebar */
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 13% 50%; /* Dimmer border for sidebar */
+    --sidebar-ring: 223 72% 35%;
   }
+
   .dark {
-    --background: 222 47% 11%; /* slate-900 */
+    /* Dark theme can be further customized if needed, or removed if default is always dark */
+    --background: 222 47% 11%; /* original dark slate-900 */
     --foreground: 210 40% 98%; /* slate-50 */
     --card: 222 47% 15%; /* slate-800 */
     --card-foreground: 210 40% 98%;
@@ -59,11 +65,13 @@
     --border: 222 47% 25%; /* e.g., slate-700 */
     --input: 222 47% 25%;
     --ring: 223 80% 70%; /* primary color for rings in dark mode */
+
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

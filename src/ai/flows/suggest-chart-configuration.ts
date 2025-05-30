@@ -38,11 +38,29 @@ const prompt = ai.definePrompt({
 Description: {{{description}}}
 Data: {{{data}}}
 
-Consider the data types, the relationships between data points, and the overall goal of the visualization. Provide a JSON configuration that is compatible with Chart.js.
+Prioritize using the following color palette for chart data elements (like bars, lines, pie slices, dataset backgrounds, dataset borders etc.):
+- #132c76
+- #09194a
+- #000c28 (Note: This color is very dark, potentially matching the app background. Use it thoughtfully, ensuring contrast, perhaps for borders on lighter elements or fills that stand out against other chart components.)
+- #4054b2
+- #4169e1
+
+For general chart text, titles, and labels, use the theme's foreground color (a light color).
+For gridlines and axis lines, the theme's border color (#a3aabf) will be applied by default, so you generally don't need to specify these unless a different color is explicitly required by the visualization.
+
+Consider the data types, the relationships between data points, and the overall goal of the visualization.
+Provide a JSON configuration that is compatible with Chart.js. The configuration should include 'data' and 'options' objects.
+Example for dataset colors:
+"datasets": [{
+  "label": "Sample",
+  "data": [10, 20],
+  "backgroundColor": ["#132c76", "#09194a"],
+  "borderColor": ["#132c76", "#09194a"]
+}]
 
 {
   "chartType": "The suggested chart type",
-  "configuration": "The suggested chart configuration in JSON format",
+  "configuration": "The suggested chart configuration in JSON format, including data and options as per Chart.js structure.",
   "reasoning": "Explanation of why the chart type and configuration were suggested"
 }
 `,
