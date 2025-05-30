@@ -34,8 +34,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     
-    /* Border color for chart gridlines etc. on the light chart background */
-    --border: 220 13% 50%; /* #a3aabf adjusted slightly for better visibility on white if needed, original: 220 13% 69% */
+    /* Border color for chart gridlines etc. on the light chart background - set to #a3aabf equivalent */
+    --border: 225 18% 69%; /* Approx #a3aabf */
     
     --input: 225 78% 20%; /* Slightly lighter than card background for dark theme inputs */
     --ring: 223 72% 27%; /* primary color for rings */

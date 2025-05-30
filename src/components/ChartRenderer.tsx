@@ -90,7 +90,6 @@ export function ChartRenderer({ chartType, chartData, chartOptions, chartRef }: 
         title: { color: 'hsl(var(--card-foreground))', display: true } // Dark text
       },
     },
-    // Removed general color: 'hsl(var(--foreground))' as specific text colors are now set
   };
 
   const mergedOptions = { ...defaultOptions, ...chartOptions };
@@ -101,18 +100,22 @@ export function ChartRenderer({ chartType, chartData, chartOptions, chartRef }: 
     if (!mergedOptions.scales.x) mergedOptions.scales.x = { type: 'category', ticks: { color: 'hsl(var(--card-foreground))' }, grid: { color: 'hsl(var(--border))' }, title: { color: 'hsl(var(--card-foreground))', display: true } };
     if (!mergedOptions.scales.y) mergedOptions.scales.y = { type: 'linear', ticks: { color: 'hsl(var(--card-foreground))' }, grid: { color: 'hsl(var(--border))' }, title: { color: 'hsl(var(--card-foreground))', display: true } };
   }
-   // For pie/doughnut charts, legend and title colors are primary concerns for text.
-  if (chartType === 'pie' || chartType === 'doughnut' || chartType === 'polarArea' || chartType === 'radar') {
-    if (mergedOptions.scales?.x || mergedOptions.scales?.y) {
-        // These chart types typically don't use Cartesian axes in the same way.
-        // Clear them if they were somehow inherited or set, to prevent rendering issues.
-        // Or, ensure their color properties are correctly set if specific scales are used (e.g. radar).
-        if (mergedOptions.scales.r) { // For radar and polarArea
-            mergedOptions.scales.r.ticks = { ...mergedOptions.scales.r.ticks, color: 'hsl(var(--card-foreground))' };
-            mergedOptions.scales.r.grid = { ...mergedOptions.scales.r.grid, color: 'hsl(var(--border))' };
-            mergedOptions.scales.r.pointLabels = { ...mergedOptions.scales.r.pointLabels, color: 'hsl(var(--card-foreground))' };
-            mergedOptions.scales.r.angleLines = { ...mergedOptions.scales.r.angleLines, color: 'hsl(var(--border))' };
-        }
+  
+  // For pie/doughnut charts, cartesian axes are usually not displayed.
+  // For polar/radar charts, ensure radial scale colors are correct.
+  if (chartType === 'pie' || chartType === 'doughnut') {
+      if (!mergedOptions.scales) {
+          mergedOptions.scales = {};
+      }
+      // Merge with existing scale options from AI/default, but ensure display is false for pie/doughnut
+      mergedOptions.scales.x = { ...mergedOptions.scales.x, display: false };
+      mergedOptions.scales.y = { ...mergedOptions.scales.y, display: false };
+  } else if (chartType === 'polarArea' || chartType === 'radar') {
+    if (mergedOptions.scales?.r) { 
+        mergedOptions.scales.r.ticks = { ...mergedOptions.scales.r.ticks, color: 'hsl(var(--card-foreground))' };
+        mergedOptions.scales.r.grid = { ...mergedOptions.scales.r.grid, color: 'hsl(var(--border))' };
+        mergedOptions.scales.r.pointLabels = { ...mergedOptions.scales.r.pointLabels, color: 'hsl(var(--card-foreground))' };
+        mergedOptions.scales.r.angleLines = { ...mergedOptions.scales.r.angleLines, color: 'hsl(var(--border))' };
     }
   }
 
